@@ -1,0 +1,137 @@
+import React, { useState } from 'react';
+import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
+import '../styles/AddEmployee.css';
+import Header from './Header';
+import Footer from './Footer';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+
+const AddEmployee = () => {
+    const [employeeId, setEmployeeId] = useState("");
+    const [employeeName, setEmployeeName] = useState("");
+    const [email, setEmail] = useState("");
+    const [managerID, setManagerID] = useState("");
+    const [managerName, setManagerName] = useState("");
+    const [isActive, setIsActive] = useState(false);
+    
+
+    const handleClick = async (e) => {
+        e.preventDefault();
+        try {
+            const existingEmployee = await axios.get(`https://localhost:7013/api/Employee/${employeeId}`);
+            if (existingEmployee.data) {
+                alert("Employee with this ID already exists in the database.");
+                // Reset the form fields
+                setEmployeeId("");
+                setEmployeeName("");
+                setEmail("");
+                setManagerID("");
+                setManagerName("");
+                setIsActive(false);
+                return;
+            }
+        
+            const response = await axios.post("https://localhost:7013/api/Employee", {
+                employeeId,
+                employeeName,
+                email,
+                managerID,
+                managerName,
+                isActive,
+                lastUpdated: new Date().toISOString() 
+               
+            });
+
+            // Handle the response
+           
+            if (response.status === 201) {
+                // Display success message
+                alert("Employee added successfully!");
+                // Reset the form fields
+                setEmployeeId("");
+                setEmployeeName("");
+                setEmail("");
+                setManagerID("");
+                setManagerName("");
+                setIsActive(false);
+               
+            } else {
+                // Display error message
+                alert("Failed to add employee. Please try again.");
+            }
+        } catch (error) {
+            // Log and display error message
+            console.error("Error adding employee:", error.message);
+            alert("Failed to add employee. Please try again.");
+        }
+    };
+
+    return (
+        <div>
+            <Header />
+            <Container className="d-flex justify-content-center align-items-center vh-100">
+                <Row>
+                    <Col md={8} lg={6} className="mb-3">
+                        <Card style={{ width: '30rem' }}>
+                            <Card.Body>
+                                <h4 className="employee-details-header">Employee Details</h4>
+                                <Form>
+                                    <Form.Group as={Row} controlId="employeeId">
+                                        <Form.Label column sm="4" className="mb-3">Employee ID</Form.Label>
+                                        <Col sm="8">
+                                            <Form.Control type="text" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} placeholder="Enter Employee ID" />
+                                        </Col>
+                                    </Form.Group>
+
+                                    <Form.Group as={Row} controlId="employeeName">
+                                        <Form.Label column sm="4" className="mb-3">Employee Name</Form.Label>
+                                        <Col sm="8">
+                                            <Form.Control type="text" value={employeeName} onChange={(e) => setEmployeeName(e.target.value)} placeholder="Enter Employee Name" />
+                                        </Col>
+                                    </Form.Group>
+
+                                    <Form.Group as={Row} controlId="email">
+                                        <Form.Label column sm="4" className="mb-3">Email</Form.Label>
+                                        <Col sm="8">
+                                            <Form.Control type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter Email" />
+                                        </Col>
+                                    </Form.Group>
+
+                                    <Form.Group as={Row} controlId="managerId">
+                                        <Form.Label column sm="4" className="mb-3">Manager ID</Form.Label>
+                                        <Col sm="8">
+                                            <Form.Control type="text" value={managerID} onChange={(e) => setManagerID(e.target.value)} placeholder="Enter Manager ID" />
+                                        </Col>
+                                    </Form.Group>
+
+                                    <Form.Group as={Row} controlId="managerName">
+                                        <Form.Label column sm="4" className="mb-3">Manager Name</Form.Label>
+                                        <Col sm="8">
+                                            <Form.Control type="text" value={managerName} onChange={(e) => setManagerName(e.target.value)} placeholder="Enter Manager Name" />
+                                        </Col>
+                                    </Form.Group>
+
+                                    <Form.Group as={Row} controlId="isActive" className="mb-3">
+                                        <Form.Label column sm="4" className="mb-3">Is Active</Form.Label>
+                                        <Col sm="8" className="d-flex align-items-center">
+                                            <Form.Check type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+                                        </Col>
+                                    </Form.Group>
+                                    
+
+                                    <Button variant="primary" type="submit" id="addButton" onClick={handleClick}>
+                                        Submit
+                                    </Button>
+                                    <Link to="/" className="btn btn-secondary ml-2">Back</Link>
+                                </Form>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+            <Footer />
+        </div>
+    );
+}
+
+export default AddEmployee;

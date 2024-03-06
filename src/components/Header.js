@@ -1,0 +1,24 @@
+// Header.js
+import React from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/Header.css';
+import { BsHouse, BsPersonPlus } from 'react-icons/bs';
+
+const Header = () => {
+    return (
+        <header className="header">
+            <div className="header-title">
+                <h2>Employee Database</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li><Link to="/"><BsHouse   style={{ marginRight: '5px', fontSize: '20px' }}/>Home</Link></li>
+                    <li><Link to="/employee/addemployee"><BsPersonPlus   style={{ marginRight: '5px', fontSize: '20px' }}/>Add</Link></li>
+                </ul>
+            </nav>
+        </header>
+    );
+}
+
+export default Header;
+

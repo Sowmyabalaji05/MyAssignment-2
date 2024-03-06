@@ -1,0 +1,14 @@
+// Footer.js
+import React from 'react';
+import '../styles/Footer.css';
+
+const Footer = () => {
+    return (
+        <footer className="footer" >
+            <div className="container text-center"></div>
+            <span className="text-muted">My Assignment 2</span>
+        </footer>
+    );
+}
+
+export default Footer;

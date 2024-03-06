@@ -1,0 +1,98 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Container } from "reactstrap";
+import { Link } from "react-router-dom";
+import Header from './Header';
+import Footer from './Footer';
+import { BsPencilSquare, BsTrash } from 'react-icons/bs'; 
+
+const EmployeeList = () => {
+    const [empData, setEmpData] = useState([]);
+    
+
+    useEffect(() => {
+        fetchEmpData();
+    }, []);
+
+    const fetchEmpData = async () => {
+        try {
+            const response = await axios.get("https://localhost:7013/api/Employee");
+            console.log("Fetched data:", response.data);
+            setEmpData(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleDelete = async (employeeId) => {
+        try {
+            const response = await axios.delete(`https://localhost:7013/api/Employee/${employeeId}`);
+            if (response.status === 200) {
+                // Remove the deleted employee from the empData array
+                setEmpData(empData.filter(employee => employee.employeeId !== employeeId));
+                alert("Employee deleted successfully!");
+            } else {
+                alert("Failed to delete employee. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error deleting employee:", error.message);
+            alert("Failed to delete employee. Please try again.");
+        }
+    };
+
+   
+    return (
+        <div>
+            <Header />
+            
+
+            <section style={{ marginBottom: '135px' }}>
+                <Container>
+                    <br />
+                    
+                    <br />
+                    <br />
+                    <table className="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>EmployeeId</th>
+                                <th>EmployeeName</th>
+                                <th>Email</th>
+                                <th>ManagerID</th>
+                                <th>ManagerName</th>
+                                <th>IsActive</th>
+                                <th>LastUpdated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {empData.map((employee, index) => (
+                                <tr key={employee.employeeId}>
+                                    <td>{index + 1}</td>
+                                    <td>{employee.employeeId}</td>
+                                    <td>{employee.employeeName}</td>
+                                    <td>{employee.email}</td>
+                                    <td>{employee.managerID}</td>
+                                    <td>{employee.managerName}</td>
+                                    <td>{employee.isActive ? "Yes" : "No"}</td>
+                                    <td>{employee.lastUpdated}</td>
+                                    <td>
+                                    <Link to={`/employee/edit/${employee.employeeId}`}>
+                                    <BsPencilSquare className="text-primary me-3" style={{ cursor: 'pointer' }} />
+                                    </Link>
+                                    <BsTrash className="text-danger" style={{ cursor: 'pointer' }} onClick={() => handleDelete(employee.employeeId)} /> {/* Delete icon */}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </Container>
+            </section>
+
+            <Footer />
+        </div>
+    );
+};
+
+export default EmployeeList;
